@@ -4,6 +4,10 @@ outputs/
 data/
 data_new/
 
+# logs (Euler)
+*.log
+*.err
+
 # test
 test/
 
