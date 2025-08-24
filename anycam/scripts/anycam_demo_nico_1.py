@@ -352,9 +352,9 @@ def main(cfg: DictConfig):
         - filter_depth_threshold: Threshold for depth filtering (default: 0.1)
         - image_plane_distance: Distance of image plane in visualization (default: 0.05)
     """
-    input_path = cfg.get("input_path", "/cluster/work/igp_psr/niacobone/examples")
+    input_path = cfg.get("input_path", "/cluster/work/igp_psr/niacobone/examples/edge_cases")
     video_name = cfg.get("video_name", "mari")
-    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results/anycam")
+    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results/anycam/edge_case")
     model_path = cfg.get("model_path", "pretrained_models/anycam_seq8")
     checkpoint = cfg.get("checkpoint", None)
     visualize = cfg.get("visualize", False)
