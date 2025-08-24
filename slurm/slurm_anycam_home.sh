@@ -41,7 +41,7 @@ cd /cluster/work/igp_psr/niacobone/anycam
 for video in /cluster/work/igp_psr/niacobone/examples/*.mp4; do
     video_name=$(basename "$video" .mp4)
     echo "Processing video: $video_name"
-    python anycam/scripts/anycam_demo_nico_1.py ++video_name="$video_name" ++ba_refinement=false
+    python anycam/scripts/anycam_demo_nico_1.py ++video_name="$video" ++ba_refinement=false
 done
 
 echo "=== Job finished at $(date) ==="

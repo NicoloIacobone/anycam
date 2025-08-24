@@ -1,3 +1,4 @@
+print("Importing libraries...")
 import sys
 import os
 import uuid
@@ -25,9 +26,7 @@ from anycam.trainer import AnyCamWrapper
 from anycam.common.geometry import get_grid_xy
 from anycam.utils.geometry import se3_ensure_numerical_accuracy
 from anycam.visualization.common import color_tensor
-
-
-
+print("Libraries imported")
 
 def load_video(video_path):
     video = VideoFileClip(video_path)
