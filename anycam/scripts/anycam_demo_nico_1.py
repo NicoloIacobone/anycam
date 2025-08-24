@@ -354,7 +354,7 @@ def main(cfg: DictConfig):
     """
     input_path = cfg.get("input_path", "/cluster/work/igp_psr/niacobone/examples")
     video_name = cfg.get("video_name", "mari")
-    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results")
+    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results/anycam")
     model_path = cfg.get("model_path", "pretrained_models/anycam_seq8")
     checkpoint = cfg.get("checkpoint", None)
     visualize = cfg.get("visualize", False)
@@ -365,7 +365,10 @@ def main(cfg: DictConfig):
     target_fps = cfg.get("fps", 0)  # 0 means use all frames
 
     input_path = os.path.join(input_path, video_name + ".mp4")
-    output_path = os.path.join(output_path, video_name)
+    if ba_refinement:
+        output_path = os.path.join(output_path, "ba", video_name)
+    else:
+        output_path = os.path.join(output_path, "no_ba", video_name)
     
     if input_path is None:
         print("Error: input_path is required")
@@ -432,7 +435,7 @@ def main(cfg: DictConfig):
 
     uncertainties = torch.cat((uncertainties, uncertainties[-1:]), dim=0)
     
-    
+
     print(f"Processed video: {len(trajectory)} poses, {len(depths)} depth maps")
     
     if export_colmap:
