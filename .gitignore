@@ -1,4 +1,6 @@
 .uuid
+.DS_Store
+myenv/
 # output prediction
 outputs/
 data/
