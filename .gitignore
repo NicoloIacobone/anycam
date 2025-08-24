@@ -1,6 +1,7 @@
 .uuid
 .DS_Store
 myenv/
+anycam_seq8/
 # output prediction
 outputs/
 data/
