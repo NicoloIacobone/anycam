@@ -353,7 +353,7 @@ def main(cfg: DictConfig):
         - image_plane_distance: Distance of image plane in visualization (default: 0.05)
     """
     input_path = cfg.get("input_path", "/cluster/work/igp_psr/niacobone/examples")
-    video_name = cfg.get("video_name", "mari.mp4")
+    video_name = cfg.get("video_name", "mari")
     output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results")
     model_path = cfg.get("model_path", "pretrained_models/anycam_seq8")
     checkpoint = cfg.get("checkpoint", None)
@@ -364,7 +364,8 @@ def main(cfg: DictConfig):
     ba_refinement = cfg.get("ba_refinement", True)
     target_fps = cfg.get("fps", 0)  # 0 means use all frames
 
-    input_path = os.path.join(input_path, video_name)
+    input_path = os.path.join(input_path, video_name + ".mp4")
+    output_path = os.path.join(output_path, video_name)
     
     if input_path is None:
         print("Error: input_path is required")
