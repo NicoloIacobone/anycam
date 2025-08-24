@@ -353,9 +353,10 @@ def main(cfg: DictConfig):
         - filter_depth_threshold: Threshold for depth filtering (default: 0.1)
         - image_plane_distance: Distance of image plane in visualization (default: 0.05)
     """
-    input_path = cfg.get("input_path", None)
-    output_path = cfg.get("output_path", None)
-    model_path = cfg.get("model_path", None)
+    input_path = cfg.get("input_path", "/cluster/work/igp_psr/niacobone/examples")
+    video_name = cfg.get("video_name", "mari.mp4")
+    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results")
+    model_path = cfg.get("model_path", "pretrained_models/anycam_seq8")
     checkpoint = cfg.get("checkpoint", None)
     visualize = cfg.get("visualize", False)
     rerun_mode = cfg.get("rerun_mode", "spawn")
@@ -363,6 +364,8 @@ def main(cfg: DictConfig):
     image_size = cfg.get("image_size", 336)
     ba_refinement = cfg.get("ba_refinement", True)
     target_fps = cfg.get("fps", 0)  # 0 means use all frames
+
+    input_path = os.path.join(input_path, video_name)
     
     if input_path is None:
         print("Error: input_path is required")
