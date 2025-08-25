@@ -354,7 +354,7 @@ def main(cfg: DictConfig):
     """
     input_path = cfg.get("input_path", "/cluster/work/igp_psr/niacobone/examples/edge_case")
     video_name = cfg.get("video_name", "mari")
-    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/results/anycam/edge_case")
+    output_path = cfg.get("output_path", "/cluster/work/igp_psr/niacobone/examples/edge_case/results/anycam")
     model_path = cfg.get("model_path", "pretrained_models/anycam_seq8")
     checkpoint = cfg.get("checkpoint", None)
     visualize = cfg.get("visualize", False)
