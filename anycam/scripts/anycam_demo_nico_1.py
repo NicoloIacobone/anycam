@@ -26,6 +26,8 @@ from anycam.trainer import AnyCamWrapper
 from anycam.common.geometry import get_grid_xy
 from anycam.utils.geometry import se3_ensure_numerical_accuracy
 from anycam.visualization.common import color_tensor
+
+import gc
 print("Libraries imported")
 
 def load_video(video_path):
@@ -379,13 +381,11 @@ def main(cfg: DictConfig):
         model_path = Path(__file__).parent.parent.parent / "outputs"
     else:
         model_path = Path(model_path)
-    
 
+    fps_try = target_fps if target_fps > 0 else 1
     max_fps = 16
-    attempt_fps = target_fps if target_fps > 0 else 1
-    while attempt_fps <= max_fps:
+    while True:
         try:
-            print(f"Attempting to process video with target fps: {attempt_fps}")
             # Load input data
             if os.path.isdir(input_path):
                 print(f"Loading frames from directory: {input_path}")
@@ -401,10 +401,10 @@ def main(cfg: DictConfig):
 
             print(f"Loaded {len(frames)} frames")
 
-            # Subsample frames if attempt_fps is specified
-            if fps and attempt_fps > 0:
-                frames = subsample_frames(frames, original_fps=fps, target_fps=attempt_fps)
-                print(f"Subsampled frames to {len(frames)} frames at {attempt_fps} fps")
+            # Subsample frames if target_fps is specified
+            if fps_try > 0 and fps:
+                frames = subsample_frames(frames, original_fps=fps, target_fps=fps_try)
+                print(f"Subsampled frames to {len(frames)} frames at {fps_try} fps")
 
             # Format frames for processing
             frames = format_frames(frames, target_size=image_size)
@@ -422,14 +422,16 @@ def main(cfg: DictConfig):
                 frames,
                 ba_refinement=ba_refinement
             )
-            break  # Success, exit loop
-
-        except torch.cuda.OutOfMemoryError:
-            print(f"CUDA OutOfMemoryError at fps={attempt_fps}. Increasing fps to reduce memory usage and retrying...")
-            attempt_fps += 1
+            gc.collect()
             torch.cuda.empty_cache()
-            if attempt_fps > max_fps:
-                print("Failed: reached maximum fps attempts due to memory constraints.")
+            break  # Success, exit loop
+        except torch.cuda.OutOfMemoryError:
+            print(f"[OOM] Out of memory with fps={fps_try}. Retrying with fps={fps_try+1}")
+            torch.cuda.empty_cache()
+            gc.collect()
+            fps_try += 1
+            if fps_try > max_fps:
+                print(f"[OOM] Unable to process the video {input_path} even with fps={fps_try-1}. Skipping.")
                 return
 
     trajectory = [se3_ensure_numerical_accuracy(torch.tensor(pose)) for pose in trajectory]
