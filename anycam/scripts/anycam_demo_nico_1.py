@@ -380,41 +380,56 @@ def main(cfg: DictConfig):
     else:
         model_path = Path(model_path)
     
-    # Load input data
-    if os.path.isdir(input_path):
-        print(f"Loading frames from directory: {input_path}")
-        frames, _ = load_frames(input_path)
-    else:
-        print(f"Loading video from: {input_path}")
-        frames, fps = load_video(input_path)
-    
-    if not frames:
-        print("Error: No frames loaded")
-        return
-        
-    print(f"Loaded {len(frames)} frames")
-    
-    # Subsample frames if target_fps is specified
-    if target_fps > 0 and fps:
-        frames = subsample_frames(frames, original_fps=fps, target_fps=target_fps)
-        print(f"Subsampled frames to {len(frames)} frames at {target_fps} fps")
-    
-    # Format frames for processing
-    frames = format_frames(frames, target_size=image_size)
-    print(f"Resized frames to {frames[0].shape[:2]}")
-    
-    # Load model
-    print(f"Loading model from {model_path}")
-    model, criterion = load_anycam(model_path, checkpoint)
-    model = model.cuda().eval()
-    
-    # Process frames
-    trajectory, proj, extras_dict, ba_extras = process_video(
-        model, 
-        criterion, 
-        frames, 
-        ba_refinement=ba_refinement
-    )
+
+    max_fps = 16
+    attempt_fps = target_fps if target_fps > 0 else 1
+    while attempt_fps <= max_fps:
+        try:
+            # Load input data
+            if os.path.isdir(input_path):
+                print(f"Loading frames from directory: {input_path}")
+                frames, _ = load_frames(input_path)
+                fps = None
+            else:
+                print(f"Loading video from: {input_path}")
+                frames, fps = load_video(input_path)
+
+            if not frames:
+                print("Error: No frames loaded")
+                return
+
+            print(f"Loaded {len(frames)} frames")
+
+            # Subsample frames if attempt_fps is specified
+            if fps and attempt_fps > 0:
+                frames = subsample_frames(frames, original_fps=fps, target_fps=attempt_fps)
+                print(f"Subsampled frames to {len(frames)} frames at {attempt_fps} fps")
+
+            # Format frames for processing
+            frames = format_frames(frames, target_size=image_size)
+            print(f"Resized frames to {frames[0].shape[:2]}")
+
+            # Load model
+            print(f"Loading model from {model_path}")
+            model, criterion = load_anycam(model_path, checkpoint)
+            model = model.cuda().eval()
+
+            # Process frames
+            trajectory, proj, extras_dict, ba_extras = process_video(
+                model,
+                criterion,
+                frames,
+                ba_refinement=ba_refinement
+            )
+            break  # Success, exit loop
+
+        except torch.cuda.OutOfMemoryError:
+            print(f"CUDA OutOfMemoryError at fps={attempt_fps}. Increasing fps to reduce memory usage and retrying...")
+            attempt_fps += 1
+            torch.cuda.empty_cache()
+            if attempt_fps > max_fps:
+                print("Failed: reached maximum fps attempts due to memory constraints.")
+                return
 
     trajectory = [se3_ensure_numerical_accuracy(torch.tensor(pose)) for pose in trajectory]
     
