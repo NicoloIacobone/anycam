@@ -385,6 +385,7 @@ def main(cfg: DictConfig):
     attempt_fps = target_fps if target_fps > 0 else 1
     while attempt_fps <= max_fps:
         try:
+            print(f"Attempting to process video with target fps: {attempt_fps}")
             # Load input data
             if os.path.isdir(input_path):
                 print(f"Loading frames from directory: {input_path}")
