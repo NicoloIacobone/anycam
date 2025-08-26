@@ -40,23 +40,8 @@ echo "Activated Python venv: $(which python)"
 # Execute
 cd /cluster/scratch/niacobone/anycam
 
-# Elenco dei video da escludere (senza estensione)
-exclude_list=("occlusione_lenta" "occlusione_veloce" "panoramico" "passante_occl_totale" "piccioni_dinamico" "piccioni_occlusione" "rigore" "sedia_1" "sedia_2")
-
 for video in /cluster/work/igp_psr/niacobone/examples/edge_case/*.mp4; do
     video_name=$(basename "$video" .mp4)
-    # Controlla se il video è nella lista di esclusione
-    skip=false
-    for excl in "${exclude_list[@]}"; do
-        if [[ "$video_name" == "$excl" ]]; then
-            skip=true
-            break
-        fi
-    done
-    if $skip; then
-        echo "Skipping excluded video: $video_name"
-        continue
-    fi
     echo "Processing video: $video_name"
     python anycam/scripts/anycam_demo_nico_1.py ++video_name="$video_name"
     echo "----------------------------------"
