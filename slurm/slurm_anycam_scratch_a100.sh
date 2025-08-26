@@ -13,7 +13,7 @@
 #SBATCH --open-mode=append
 #
 # Specify time limit.
-#SBATCH --time=00:30:00
+#SBATCH --time=00:20:00
 #
 # Specify number of tasks.
 #SBATCH --ntasks=1
@@ -22,10 +22,10 @@
 #SBATCH --cpus-per-task=4
 #
 # Specify memory limit per CPU core.
-#SBATCH --mem-per-cpu=32768
+#SBATCH --mem-per-cpu=65536
 #
 # Specify number of required GPUs.
-#SBATCH --gpus=rtx_4090:2
+#SBATCH --gpus=a100:1
 
 echo "=== Job starting on $(hostname) at $(date) ==="
 # DATE_VAR=$(date +%Y%m%d%H%M%S)
@@ -34,13 +34,13 @@ echo "=== Job starting on $(hostname) at $(date) ==="
 module load stack/2024-06 python/3.11 cuda/12.4 eth_proxy
 
 # Activate virtual environment for SpatialTrackerV2.
-source /cluster/work/igp_psr/niacobone/anycam/myenv/bin/activate
+source /cluster/scratch/niacobone/anycam/myenv/bin/activate
 echo "Activated Python venv: $(which python)"
 
 # Execute
-cd /cluster/work/igp_psr/niacobone/anycam
+cd /cluster/scratch/niacobone/anycam
 
-for video in /cluster/work/igp_psr/niacobone/examples/*.mp4; do
+for video in /cluster/work/igp_psr/niacobone/examples/edge_case/*.mp4; do
     video_name=$(basename "$video" .mp4)
     echo "Processing video: $video_name"
     python anycam/scripts/anycam_demo_nico_1.py ++video_name="$video_name"

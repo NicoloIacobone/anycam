@@ -13,7 +13,7 @@
 #SBATCH --open-mode=append
 #
 # Specify time limit.
-#SBATCH --time=00:20:00
+#SBATCH --time=00:30:00
 #
 # Specify number of tasks.
 #SBATCH --ntasks=1
@@ -22,10 +22,10 @@
 #SBATCH --cpus-per-task=4
 #
 # Specify memory limit per CPU core.
-#SBATCH --mem-per-cpu=65536
+#SBATCH --mem-per-cpu=32768
 #
 # Specify number of required GPUs.
-#SBATCH --gpus=a100:1
+#SBATCH --gpus=rtx_4090:2
 
 echo "=== Job starting on $(hostname) at $(date) ==="
 # DATE_VAR=$(date +%Y%m%d%H%M%S)

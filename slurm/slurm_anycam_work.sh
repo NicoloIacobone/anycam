@@ -13,7 +13,7 @@
 #SBATCH --open-mode=append
 #
 # Specify time limit.
-#SBATCH --time=00:20:00
+#SBATCH --time=00:30:00
 #
 # Specify number of tasks.
 #SBATCH --ntasks=1
@@ -22,7 +22,7 @@
 #SBATCH --cpus-per-task=4
 #
 # Specify memory limit per CPU core.
-#SBATCH --mem-per-cpu=8192
+#SBATCH --mem-per-cpu=32768
 #
 # Specify number of required GPUs.
 #SBATCH --gpus=rtx_4090:2
@@ -36,7 +36,6 @@ module load stack/2024-06 python/3.11 cuda/12.4 eth_proxy
 # Activate virtual environment for SpatialTrackerV2.
 source /cluster/work/igp_psr/niacobone/anycam/myenv/bin/activate
 echo "Activated Python venv: $(which python)"
-
 
 # Execute
 cd /cluster/work/igp_psr/niacobone/anycam
