@@ -436,7 +436,7 @@ def main(cfg: DictConfig):
             gc.collect()
             if fps_try < 1:
                 print(f"[OOM] Unable to process the video {input_path} even with high subsampling. Skipping.")
-            return
+                return
 
     trajectory = [se3_ensure_numerical_accuracy(torch.tensor(pose)) for pose in trajectory]
     
