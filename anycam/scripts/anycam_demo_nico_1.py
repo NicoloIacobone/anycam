@@ -382,18 +382,18 @@ def main(cfg: DictConfig):
     else:
         model_path = Path(model_path)
 
-    fps_try = target_fps if target_fps >= 0 else 1
-    max_fps = 16
+    attempt = 1  # parte da 1 per evitare divisione per zero
+    fps_try = target_fps  # inizia da 0
     while True:
         try:
             # Load input data
-            if os.path.isdir(input_path):
-                print(f"Loading frames from directory: {input_path}")
-                frames, _ = load_frames(input_path)
-                fps = None
-            else:
-                print(f"Loading video from: {input_path}")
-                frames, fps = load_video(input_path)
+            # if os.path.isdir(input_path):
+            #     print(f"Loading frames from directory: {input_path}")
+            #     frames, _ = load_frames(input_path)
+            #     fps = None
+            # else:
+            print(f"Loading video from: {input_path}")
+            frames, fps = load_video(input_path)
 
             if not frames:
                 print("Error: No frames loaded")
@@ -426,13 +426,17 @@ def main(cfg: DictConfig):
             torch.cuda.empty_cache()
             break  # Success, exit loop
         except torch.cuda.OutOfMemoryError:
-            print(f"[OOM] Out of memory with fps={fps_try}. Retrying with fps={fps_try+1}")
+            attempt += 1
+            if attempt == 2:
+                fps_try = fps // 2
+            else:
+                fps_try = fps // attempt
+            print(f"[OOM] Out of memory. Retrying with target_fps={fps_try}")
             torch.cuda.empty_cache()
             gc.collect()
-            fps_try += 1
-            if fps_try > max_fps:
-                print(f"[OOM] Unable to process the video {input_path} even with fps={fps_try-1}. Skipping.")
-                return
+            if fps_try < 1:
+                print(f"[OOM] Unable to process the video {input_path} even with high subsampling. Skipping.")
+            return
 
     trajectory = [se3_ensure_numerical_accuracy(torch.tensor(pose)) for pose in trajectory]
     
