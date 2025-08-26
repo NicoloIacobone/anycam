@@ -382,7 +382,7 @@ def main(cfg: DictConfig):
     else:
         model_path = Path(model_path)
 
-    fps_try = target_fps if target_fps > 0 else 1
+    fps_try = target_fps if target_fps >= 0 else 1
     max_fps = 16
     while True:
         try:
